@@ -1,6 +1,5 @@
 TELEGRAFVER=${1:-'1.4.3'}
 VSPHEREVER=${1:-'1.3.4-vsphere2'}
-RPMVER="${TELEGRAFVER/-/_}"
 export RPMBUILDROOT=/root/rpmbuild
 export GOPATH=/usr/share/gocode
 export PATH=$GOPATH/bin:$PATH
@@ -16,7 +15,6 @@ gem install fpm
 sed -i -e "s#.centos##g" /etc/rpm/macros.dist
 
 # telegraf
-go get github.com/influxdata/telegraf
 mkdir -p $GOPATH/src/github.com/influxdata
 cd $GOPATH/src/github.com/influxdata
 git clone --depth=10 -b $TELEGRAFVER https://github.com/influxdata/telegraf.git
@@ -33,5 +31,6 @@ echo "github.com/vmware/govmomi b63044e5f833781eb7b305bc035392480ee06a82" >> $GO
 
 # build
 cd $GOPATH/src/github.com/influxdata/telegraf
+make deps
 $GOPATH/src/github.com/influxdata/telegraf/scripts/build.py --package --platform=linux --arch=amd64
 /bin/cp -f $GOPATH/src/github.com/influxdata/telegraf/build/*.rpm $RPMBUILDROOT/RPMS/x86_64
